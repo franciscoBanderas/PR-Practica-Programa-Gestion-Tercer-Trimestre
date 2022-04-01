@@ -1,0 +1,183 @@
+package es.Estudium.Tema7;
+
+import java.awt.Button;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+public class AltaRepartidor implements WindowListener, ActionListener {
+
+	//componentes
+		Frame ventana= new Frame ("Alta repartidor");
+		Label lblNombre= new Label("Nombre");
+		Label lblApellidos= new Label("Apellidos");
+
+	
+
+		TextField txtNombre= new TextField(50);
+		TextField txtApellidos= new TextField(50);
+		
+
+
+		Button btnAceptar= new Button ("Aceptar");
+		Button btnLimpiar= new Button ("Limpiar");
+
+		Dialog dlgMensaje= new Dialog (ventana, "mensaje", true);
+		Label lblMensaje= new Label("xxxxxxxxxxxxxxxxxxxxxxxxx");
+
+		BaseDeDatos bd= new BaseDeDatos();
+
+		//constructor
+		public AltaRepartidor() 	
+		{
+			// Listener
+			ventana.addWindowListener(this);
+			dlgMensaje.addWindowListener(this);
+			btnAceptar.addActionListener(this);
+			btnLimpiar.addActionListener(this);
+			//Pantalla
+			ventana.setSize(400, 250); // Ancho y altura
+			ventana.setResizable(false);// no permitir redimensionar
+
+			ventana.setLayout(new FlowLayout());
+
+			ventana.add(lblNombre);
+			ventana.add(txtNombre);
+			ventana.add(lblApellidos);
+			ventana.add(txtApellidos);
+			ventana.add(btnAceptar);
+			ventana.add(btnLimpiar);
+
+			ventana.setLocationRelativeTo(null);//fijar que la ventana salga
+			ventana.setVisible(true);//mostrar la ventana
+		}
+
+
+
+		@Override
+		public void actionPerformed(ActionEvent evento) {
+			// Aceptar
+			if(evento.getSource().equals(btnAceptar))
+
+			{
+				// conectar
+				bd.conectar();
+				// coger los datos del formulario
+				String nombre=txtNombre.getText();
+				String apellidos=txtApellidos.getText();
+			    
+
+				// hacer el insert con esos datos
+				String Sentencia= "Insert into repartidores values (null,'"+nombre+"','"+apellidos+"');";
+				int resultado= bd.AltaRepartidor(Sentencia);
+
+				if(resultado==0)			
+				{
+					lblMensaje.setText("Alta correcta.");
+				}
+
+				else 
+
+				{
+					lblMensaje.setText("Error en el alta.");
+				}
+				// desconectar
+				bd.desconectar();
+				dlgMensaje.setSize(180,75); 
+				dlgMensaje.setLayout(new FlowLayout());
+				dlgMensaje.setResizable(false);
+				dlgMensaje.add(lblMensaje);
+				dlgMensaje.setLocationRelativeTo(null);
+				dlgMensaje.setVisible(true);
+			}
+			//Limpiar
+			else if(evento.getSource().equals(btnLimpiar))
+			{
+				limpiar();
+
+			}
+		}
+
+
+
+		private void limpiar() {
+			txtNombre.setText("");
+			txtApellidos.setText("");
+			txtNombre.requestFocus();
+		}
+
+
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+
+
+			if(dlgMensaje.isActive())
+			{
+				dlgMensaje.setVisible(false);
+				//limpiar();
+			}
+
+			else
+			{	
+				ventana.setVisible(false);
+			}
+		}
+
+
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+	}
+
+
+
