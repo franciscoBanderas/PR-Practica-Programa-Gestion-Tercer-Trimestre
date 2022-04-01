@@ -1,0 +1,197 @@
+package es.Estudium.Tema7;
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class AltaCompranEntregan implements WindowListener, ActionListener
+{
+	Frame ventana = new Frame("Nueva Compra-entrega");
+	Label lblDesde = new Label("Fecha de compra");
+	TextField txtDesde = new TextField(25);
+	Choice choRepartidores = new Choice();
+	Choice choClientes = new Choice();
+	Label lblChoice = new Label("Elige un repartidor");
+	Label lblChoice2 = new Label("Elige un Cliente");
+	Label lblHasta = new Label("Fecha de entrega");
+	TextField txtHasta = new TextField(25);
+	Button btnAceptar = new Button("Aceptar");
+	Button btnLimpiar = new Button("Limpiar");
+	Dialog dlgFeedback = new Dialog(ventana, "Mensaje", true);
+	Label lblMensaje = new Label("XXXXXXXXXXXXXXX");
+	BaseDeDatos bd = new BaseDeDatos();
+	ResultSet rs = null;
+	int idRepartidorFK;
+	int idClienteFK;
+
+	public AltaCompranEntregan()
+	{
+		ventana.setLayout(new FlowLayout());
+		ventana.addWindowListener(this);
+		ventana.add(lblDesde);
+		ventana.add(txtDesde);
+		ventana.add(lblHasta);
+		ventana.add(txtHasta);
+      
+		bd.conectar();
+		
+		ventana.add(lblChoice2);
+		
+		ventana.add(choClientes);
+		//Sacar los datos de la tabla trabajadores
+		rs = bd.rellenarClientes();
+		//registro a registro meterlo en el Choice
+		try
+		{
+			while(rs.next())
+			{
+				choClientes.add(rs.getInt("idCliente")
+						+ "-" + rs.getString("nombreCliente")
+						+ "-" + rs.getString("apellidosCliente"));
+
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		
+		ventana.add(lblChoice);
+		ventana.add(choRepartidores);
+		//Sacar los datos de la tabla trabajadores
+		rs = bd.rellenarRepartidores();
+		//registro a registro meterlo en el Choice
+		try
+		{
+			while(rs.next())
+			{
+				choRepartidores.add(rs.getInt("idRepartidor")
+						+ "-" + rs.getString("nombreRepartidor")
+						+ "-" + rs.getString("apellidosRepartidor"));
+
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		
+		
+		bd.desconectar();
+		btnAceptar.addActionListener(this);
+		btnLimpiar.addActionListener(this);
+		
+		ventana.add(btnAceptar);
+		ventana.add(btnLimpiar);
+		
+		ventana.setSize(250,300);
+		ventana.setLocationRelativeTo(null);
+		ventana.setVisible(true);
+		ventana.setResizable(false);
+	}
+	@Override
+	public void actionPerformed(ActionEvent evento)
+	{
+		if(evento.getSource().equals(btnLimpiar))
+		{
+			limpiarTextos();
+		}
+		else if(evento.getSource().equals(btnAceptar))
+		{
+			bd.conectar();
+			String[] seleccionado = choRepartidores.getSelectedItem().split("-"); //Trocear
+			idRepartidorFK = Integer.parseInt(seleccionado[0]);
+			String[] seleccionado2 = choClientes.getSelectedItem().split("-"); //Trocear
+			idClienteFK = Integer.parseInt(seleccionado2[0]);
+			idRepartidorFK = Integer.parseInt(seleccionado[0]);
+			int resultado = bd.AltaCompraEntregan(txtDesde.getText(), txtHasta.getText(), idRepartidorFK, idClienteFK);
+
+			if(resultado == 0)
+			{
+				limpiarTextos();
+				lblMensaje.setText("Alta correcta");
+				mostrarDialogo();
+			}
+			else
+			{
+				lblMensaje.setText("Alta Incorrecta");
+			}
+			mostrarDialogo();
+			bd.desconectar();
+		}
+	}
+	@Override
+	public void windowOpened(WindowEvent e)
+	{
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void windowClosing(WindowEvent e)
+	{
+		if(dlgFeedback.isActive())
+		{
+			dlgFeedback.setVisible(false);
+		}
+		else
+		{
+			ventana.setVisible(false);
+		}
+	}
+	@Override
+	public void windowClosed(WindowEvent e)
+	{
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void windowIconified(WindowEvent e)
+	{
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void windowDeiconified(WindowEvent e)
+	{
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void windowActivated(WindowEvent e)
+	{
+		// TODO Auto-generated method stub
+	}
+	@Override
+
+	public void windowDeactivated(WindowEvent e)
+	{
+		// TODO Auto-generated method stub
+	}
+	public void mostrarDialogo()
+	{
+		dlgFeedback.setLayout(new FlowLayout());
+		dlgFeedback.addWindowListener(this);
+		dlgFeedback.add(lblMensaje);
+		dlgFeedback.setSize(150,80);
+		dlgFeedback.setResizable(false);
+		dlgFeedback.setLocationRelativeTo(null);
+		dlgFeedback.setVisible(true);
+	}
+	public void limpiarTextos()
+	{
+		txtDesde.setText("");
+		txtHasta.setText("");
+
+
+		txtDesde.requestFocus();
+	}
+
+}
+
+
+
+
+
