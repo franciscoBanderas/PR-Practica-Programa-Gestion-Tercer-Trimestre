@@ -1,0 +1,227 @@
+package es.Estudium.Tema7;
+
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+public class MenuPrincipal implements WindowListener, ActionListener  {
+
+	Frame ventana= new Frame ("Menú Principal");
+	MenuBar barraMenu= new MenuBar();
+	Menu mnuClientes= new Menu ("Clientes");//Articulos  CRUD
+	MenuItem mniAltaCliente= new MenuItem("Nuevo Cliente");
+	MenuItem mniConsultaClientes= new MenuItem("Listado de clientes");
+	MenuItem mniBajaCliente= new MenuItem("Eliminar Cliente");
+	MenuItem mniModificacionCliente= new MenuItem("Modificar cliente");
+
+	Menu mnuRepartidores= new Menu("Repartidores"); //Clientes   
+	MenuItem mniAltaRepartidor= new MenuItem("Nuevo Repartidor");
+	MenuItem mniConsultaRepartidores= new MenuItem("Listado de Repartidores");
+	MenuItem mniBajaRepartidor= new MenuItem("Eliminar Repartidor");
+	MenuItem mniModificacionRepartidor= new MenuItem("Modificar Repartidor");
+
+	Menu mnuVehiculos= new Menu("Vehiculos");//Facturas
+	MenuItem mniAltaVehiculo= new MenuItem("Nuevo vehículo ");
+	MenuItem mniConsultaVehiculos= new MenuItem("Listado de vehículos ");
+	MenuItem mniBajaVehiculo= new MenuItem("Eliminar vehiculo");
+	MenuItem mniModificacionVehiculo= new MenuItem("Modificar vehículo");
+
+	Menu mnuCompranEntregan= new Menu("Compra-entrega"); //Clientes   
+	MenuItem mniAltaCompranEntregan= new MenuItem("Nueva compra entrega");
+	MenuItem mniConsultaCompranEntregan= new MenuItem("Listado de compra y entrega");
+	MenuItem mniBajaCompranEntregan= new MenuItem("Eliminar compra entregan");
+	MenuItem mniModificacionCompranEntregan= new MenuItem("Modificacion Compra entregan");
+
+	Label lblUsuario= new Label("");//Usuario
+
+
+	public MenuPrincipal(int tipoUsuario) 
+	{
+		//Listener
+		ventana.addWindowListener(this);
+		mniConsultaClientes.addActionListener(this);
+		mniAltaCliente.addActionListener(this);
+        mniBajaCliente.addActionListener(this);
+        mniConsultaRepartidores.addActionListener(this);
+        mniAltaRepartidor.addActionListener(this);
+        mniModificacionRepartidor.addActionListener(this);
+        mniAltaCompranEntregan.addActionListener(this);
+        mniConsultaCompranEntregan.addActionListener(this);
+        mniBajaCompranEntregan.addActionListener(this);
+        mniModificacionCompranEntregan.addActionListener(this);
+        
+		//Pantalla
+		ventana.setSize(350, 150); // Ancho y altura
+		ventana.setResizable(false);// no permitir redimensionar
+
+		ventana.setLayout(new FlowLayout());// fijar la distribución
+
+		mnuClientes.add(mniAltaCliente);
+		mnuClientes.add(mniConsultaClientes);
+		mnuRepartidores.add(mniAltaRepartidor);
+		mnuRepartidores.add(mniConsultaRepartidores);
+		mnuVehiculos.add(mniAltaVehiculo);
+		mnuVehiculos.add(mniConsultaVehiculos);
+		mnuCompranEntregan.add(mniAltaCompranEntregan);
+		mnuCompranEntregan.add(mniConsultaCompranEntregan);
+		
+		
+
+		if(tipoUsuario==1)
+		{		
+			mnuClientes.add(mniBajaCliente);
+			mnuClientes.add(mniModificacionCliente);
+		}
+		barraMenu.add(mnuClientes);
+		
+		
+		
+		
+		
+		if(tipoUsuario==1)
+		{		
+			mnuRepartidores.add(mniBajaRepartidor);
+			mnuRepartidores.add(mniModificacionRepartidor);
+		}
+		
+		barraMenu.add(mnuRepartidores);
+		
+		
+		
+		
+		if(tipoUsuario==1)
+		{		
+			mnuVehiculos.add(mniBajaVehiculo);
+			mnuVehiculos.add(mniModificacionVehiculo);
+		}
+		
+		
+		barraMenu.add(mnuVehiculos);
+		
+		if(tipoUsuario==1)
+		{		
+		mnuCompranEntregan.add(mniBajaCompranEntregan);
+		mnuCompranEntregan.add(mniModificacionCompranEntregan);
+		}
+		
+		barraMenu.add(mnuCompranEntregan);
+		
+		ventana.add(lblUsuario);
+		ventana.setMenuBar(barraMenu);
+
+		ventana.setLocationRelativeTo(null);//fijar que la ventana salga
+		ventana.setVisible(true);//mostrar la ventana
+	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent evento) {
+		
+		if(evento.getSource().equals(mniConsultaClientes))
+		{
+			new ConsultaClientes();
+		}
+		
+		else if(evento.getSource().equals(mniAltaCliente))
+		{
+			new AltaCliente();
+		}
+       
+		else if(evento.getSource().equals(mniBajaCliente))
+		{
+			new BajaCliente();
+		}
+		
+		else if(evento.getSource().equals(mniConsultaRepartidores))
+		{
+			new ConsultaRepartidores();
+		}
+		
+		else if(evento.getSource().equals(mniAltaRepartidor))
+		{
+			new AltaRepartidor();
+		}
+		
+		else if(evento.getSource().equals(mniModificacionRepartidor))
+		{
+			new ModificacionRepartidor();
+		}
+		
+		else if(evento.getSource().equals(mniAltaCompranEntregan))
+		{
+			new AltaCompranEntregan();
+		}
+		
+		else if(evento.getSource().equals(mniConsultaCompranEntregan))
+		{
+			new ConsultaCompranEntregan();
+		}
+		
+		else if(evento.getSource().equals(mniModificacionCompranEntregan))
+		{
+			new BajaCompranEntregan();
+		}
+		
+		else if(evento.getSource().equals(mniBajaCompranEntregan))
+		{
+			new BajaCompranEntregan();
+		}
+	}
+
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void windowClosing(WindowEvent we) {
+
+		System.exit(0);
+
+	}
+
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+}
