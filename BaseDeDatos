@@ -1,0 +1,396 @@
+package es.Estudium.Tema7;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class BaseDeDatos {
+	String driver = "com.mysql.cj.jdbc.Driver";
+	String url = "jdbc:mysql://localhost:3306/empresa_repartos_pr";
+	String login = "Paco";// usuario de MYSQL
+	String password = "Studium2022;"; //SU CLAVE CORRESPONDIENTE de usuario
+	String sentencia = "";
+	Connection connection = null;
+	Statement statement = null;
+
+
+	public BaseDeDatos()
+	{
+
+	}
+
+	public  void conectar()
+	{
+		try
+		{
+			// Cargar los controladores para el acceso a la BD
+			Class.forName(driver);
+			// Establecer la conexión con la BD Repartos
+			connection = DriverManager.getConnection(url, login, password);
+		}
+		catch (ClassNotFoundException cnfe)
+		{
+
+		}
+		catch (SQLException sqle)
+		{
+
+		}
+		//return connection;
+	}
+
+
+	public int  consultar(String sentencia)
+	{
+		int resultado=-1;
+		ResultSet rs= null;
+
+		try
+		{
+			// Crear una sentencia
+			statement = connection.createStatement();
+			// Crear un objeto ResultSet para guardar lo obtenido
+			// y ejecutar la sentencia SQL
+			rs = statement.executeQuery(sentencia);
+			if(rs.next())// Si hay almenos uno
+			{
+				resultado=rs.getInt("tipoUsuario");
+			}
+
+		}
+
+		catch (SQLException sqle)
+		{
+
+		}
+		return resultado;
+	}
+	
+	public String consultarRepartidores() 
+	{
+		String contenido="";
+
+		ResultSet rs= null;
+
+		try
+		{
+			// Crear una sentencia
+			statement = connection.createStatement();
+			// Crear un objeto ResultSet para guardar lo obtenido
+			// y ejecutar la sentencia SQL
+			rs = statement.executeQuery("SELECT * FROM repartidores" ); 
+
+			while(rs.next())// Si hay almenos uno
+			{
+				contenido=contenido+rs.getInt("idRepartidor")+
+						" "+rs.getString("apellidosRepartidor")+", "+rs.getString("nombreRepartidor")+"\n";
+			}
+
+		}
+
+		catch (SQLException sqle)
+		{
+
+		}
+
+		return(contenido);
+	}
+	
+	public String consultarClientes() 
+	{
+		String contenido="";
+
+		ResultSet rs= null;
+
+		try
+		{
+			// Crear una sentencia
+			statement = connection.createStatement();
+			// Crear un objeto ResultSet para guardar lo obtenido
+			// y ejecutar la sentencia SQL
+			rs = statement.executeQuery("SELECT * FROM clientes" ); 
+
+			while(rs.next())// Si hay almenos uno
+			{
+				contenido=contenido+rs.getInt("idCliente")+
+						" "+rs.getString("apellidosCliente")+", "+rs.getString("nombreCliente")+"\n";
+			}
+
+		}
+
+		catch (SQLException sqle)
+		{
+
+		}
+
+		return(contenido);
+	}
+	
+	
+	public String ConsultaCompranEntregan() 
+	{
+		String contenido="";
+
+		ResultSet rs= null;
+
+		try
+		{
+			// Crear una sentencia
+			statement = connection.createStatement();
+			// Crear un objeto ResultSet para guardar lo obtenido
+			// y ejecutar la sentencia SQL
+			rs = statement.executeQuery("SELECT * FROM compranEntregan" ); 
+			
+
+			while(rs.next())// Si hay almenos uno
+			{
+				contenido=contenido+rs.getInt("idCompranEntregan")+ " "+rs.getString("desdeCompranEntregan")+", "+rs.getString("hastaCompranEntregan")+""
+						+rs.getInt("idRepartidorFK")+","+rs.getInt("idClienteFK")+"\n";
+				
+			}
+			
+		}
+		
+			catch (SQLException sqle)
+			{
+
+			}
+		    
+			return(contenido);
+		}
+	
+	
+	public int AltaCliente(String sentencia)
+	
+
+	{
+		int resultado= 0;// exito
+
+		try
+		{
+			// Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el insert
+			statement.executeUpdate(sentencia); 
+		}
+
+		catch (SQLException sqle)
+		{
+			resultado= -1;// error
+		}
+
+		return(resultado);
+	}
+	
+public int AltaRepartidor(String sentencia)
+	
+
+	{
+		int resultado= 0;// exito
+
+		try
+		{
+			// Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el insert
+			statement.executeUpdate(sentencia); 
+		}
+
+		catch (SQLException sqle)
+		{
+			resultado= -1;// error
+		}
+
+		return(resultado);
+	}
+
+	
+	
+
+	public ResultSet rellenarClientes()
+	{
+		ResultSet rs= null;
+		try
+		{
+			// Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el insert
+			rs= statement.executeQuery("SELECT * FROM clientes"); 
+		}
+
+		catch (SQLException sqle)
+		{}	
+
+		return (rs);
+	}
+	
+	public ResultSet rellenarRepartidores()
+	
+	{
+		ResultSet rs= null;
+		try
+		{
+			// Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el insert
+			rs= statement.executeQuery("SELECT * FROM repartidores"); 
+		}
+
+		catch (SQLException sqle)
+		{}	
+
+		return (rs);
+	}
+	public int borrarCliente(int idCliente)
+
+	{ 
+		int resultado=0;
+		// devolver un 0--- borrado exito
+
+		//Devolver un -1---- borrado error
+		try
+		{
+			// Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el delete
+			String sentencia="DELETE FROM CompranEntregan WHERE idClienteFk = "+idCliente;
+			statement.executeUpdate(sentencia);
+			sentencia="DELETE FROM clientes WHERE idCliente = "+idCliente; 
+			statement.executeUpdate(sentencia);
+			System.out.println(sentencia);
+		}
+
+		catch (SQLException sqle)
+		{
+			resultado= -1;// error
+		}
+		System.out.println(resultado);
+		return(resultado);
+	}
+	
+	public ResultSet modificacionRepartidores(String idRepartidor)
+	{
+		ResultSet rs= null;
+		try
+		{
+			// Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el insert
+			rs= statement.executeQuery("SELECT * FROM repartidores Where idRepartidor="+idRepartidor); 
+		}
+
+		catch (SQLException sqle)
+		{}	
+
+		return (rs);
+	}
+	
+	public int actualizarRepartidor(String idRepartidor, String nombreNuevo, String apellidosNuevo) 
+	
+	{
+		int resultado=0;
+		String sentencia="UPDATE repartidores SET nombreRepartidor= '"+nombreNuevo+"', apellidosRepartidor='"+apellidosNuevo+
+				"' Where idRepartidor ="+idRepartidor;
+		// devolver un 0--- Modificación con exito
+        //Devolver un -1---- o si la Modificación a dado error error
+				try
+				{
+					// Crear una sentencia
+					statement = connection.createStatement();
+					// Ejecutar el update
+					statement.executeUpdate(sentencia);
+				}
+
+				catch (SQLException sqle)
+				{
+					resultado= -1;// error
+				}
+		return(resultado);
+	}
+	
+	
+	public int AltaCompraEntregan(String desde, String hasta, int idRepartidorFK, int idClienteFK)
+	{
+	int resultado = 0;
+	String sentencia = "INSERT INTO compranEntregan VALUES(null, '" 
+	+desde+ "'," + " '"
+	+ hasta + "','"
+	+ idRepartidorFK +"','"
+	+idClienteFK+"');";
+
+	try
+	{
+	statement = connection.createStatement();
+	statement.executeUpdate(sentencia);
+	}
+	catch (SQLException e)
+	{
+	resultado = 1;
+	}
+	return (resultado);
+	}
+	public ResultSet rellenarChoCompranEntregan()
+	{
+	ResultSet rs = null;
+
+	try
+	{
+	//Crear la sentencia
+	statement = connection.createStatement();
+	//Ejecutar el SELECT
+	rs = statement.executeQuery("SELECT * FROM CompranEntregan");
+	}
+	catch (SQLException sqle)
+	{}
+	return (rs);
+	}
+	
+	public int borrarCompranEntregan(int idCompranEntregan)
+
+	{ 
+		int resultado=0;
+		// devolver un 0--- borrado exito
+
+		//Devolver un -1---- borrado error
+		try
+		{
+			// Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el delete
+			sentencia="DELETE FROM compranEntregan WHERE  idCompranEntregan= "+idCompranEntregan; 
+			statement.executeUpdate(sentencia);
+			System.out.println(sentencia);
+			
+		}
+
+		catch (SQLException sqle)
+		{
+			resultado= -1;// error
+		}
+		System.out.println(resultado);
+		return(resultado);
+	}
+
+	
+	public void desconectar()
+	{
+
+		try
+		{
+			if(connection!=null)
+			{
+				connection.close();
+			}
+		}
+		catch (SQLException e)
+		{
+
+		}
+		
+
+	}
+	
+	
+}
