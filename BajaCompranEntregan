@@ -1,0 +1,201 @@
+package es.Estudium.Tema7;
+
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.sql.ResultSet;
+
+public class BajaCompranEntregan implements  WindowListener, ActionListener {
+	
+	
+	Frame ventana = new Frame ("Eliminar CompranEntregan");
+	Label lblCabecera = new Label ("Elegir registro compra entrega");
+	Choice choCompranEntregan = new Choice();
+	Button btnBorrar = new Button("Borrar");
+
+	Dialog dlgConfirmacion = new Dialog(ventana,"Confirmación", true);
+	Label lblConfirmacion = new Label("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+	Button btnSi = new Button("Sí");
+	Button btnNo = new Button("No");
+
+	Dialog dlgMensaje = new Dialog(ventana,"Mensaje", true);
+	Label lblMensaje = new Label("Baja correcta");
+
+	BaseDeDatos bd = new BaseDeDatos();
+	ResultSet rs = null;
+	int idPersonaBorrar = 0;
+
+	//Constructor
+	public BajaCompranEntregan()
+	{
+		//Listener
+		ventana.addWindowListener(this);
+		btnBorrar.addActionListener(this);
+
+		//Pantalla
+		ventana.setLayout(new FlowLayout());
+		ventana.setSize(300,200);
+		ventana.setResizable(false);
+		ventana.add(lblCabecera);
+
+
+		// Rellenar el Choice
+		choCompranEntregan.add("Seleccionar un cliente...");
+		// Conectar BD
+		bd.conectar();
+		//Sacar a los clientes de la tabla
+		rs=bd.rellenarChoCompranEntregan();
+		try
+		{
+			while (rs.next())
+			{
+				choCompranEntregan.add(rs.getInt("idCompranEntregan") + "-" +rs.getString("desdeCompranEntregan")+"-"+rs.getString("hastaCompranEntregan")+
+						"-"+rs.getInt("idRepartidorFK")+"-"+rs.getInt("idClienteFK"));
+
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
+
+		//Sacar los datos de la tabla personas
+		// Registro a registro, meteros en el choice
+		//Desconectar la base de datos
+		bd.desconectar();
+		ventana.add(choCompranEntregan);
+		ventana.add(btnBorrar);
+
+		ventana.setLocationRelativeTo(null);
+		ventana.setVisible(true);
+	}
+	public void actionPerformed(ActionEvent evento)
+	{
+		if (evento.getSource().equals(btnBorrar))
+		{
+			if ((choCompranEntregan.getSelectedItem().equals("Seleccionar compra y la entrega...")))
+			{
+				lblMensaje.setText("Debes seleccionar una compra entrega");
+				mostrarMensaje();
+			}
+			else
+			{
+				mostrarDialogo();
+			}
+		}
+		else if (evento.getSource().equals(btnNo))
+		{
+			dlgConfirmacion.setVisible(false);
+		}
+		else if (evento.getSource().equals(btnSi))
+		{
+			bd.conectar();
+			String[] array = choCompranEntregan.getSelectedItem().split("-");
+			int resultado= bd.borrarCompranEntregan(Integer.parseInt(array[0]));
+			
+			if (resultado == 0)
+			{
+				lblMensaje.setText("Se ha eliminado correctamente");
+				dlgConfirmacion.setVisible(false);
+				mostrarMensaje();
+			}
+			else
+			{
+				lblMensaje.setText("Se ha producido un error en el borrado");
+				mostrarMensaje();
+			}
+			bd.desconectar();
+		}
+		//Desconectar de la base
+
+	}
+	private void mostrarMensaje()
+	{
+		dlgMensaje.setLayout(new FlowLayout());
+		dlgMensaje.setSize(300,200);
+		dlgMensaje.addWindowListener(this);
+		dlgMensaje.add(lblMensaje);
+
+		//lblMensaje.setText("Error");
+		dlgMensaje.setLocationRelativeTo(null);
+		dlgMensaje.setVisible(true);
+		//dlgConfirmacion.setVisible(false);
+	}
+	private void mostrarDialogo()
+	{
+		//Mostrar el diálogo de confirmación
+		//Listeners
+		dlgConfirmacion.addWindowListener(this);
+		btnSi.addActionListener(this);
+		btnNo.addActionListener(this);
+		//Pantalla
+		dlgConfirmacion.setLayout(new FlowLayout());
+		dlgConfirmacion.setSize(380,100);
+		dlgConfirmacion.add(lblConfirmacion);
+		lblConfirmacion.setText("¿Está seguro de borrar a " + choCompranEntregan.getSelectedItem()+ "?");
+		dlgConfirmacion.add(btnSi);
+		dlgConfirmacion.add(btnNo);
+
+		dlgConfirmacion.setLocationRelativeTo(null);
+		dlgConfirmacion.setVisible(true);
+	}
+	@Override
+	public void windowOpened(WindowEvent e)
+	{
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void windowClosing(WindowEvent e)
+	{
+
+		if (dlgMensaje.isActive())
+		{
+			dlgMensaje.setVisible(false);
+		}
+		else if(dlgConfirmacion.isActive())
+		{
+			dlgConfirmacion.setVisible(false);
+		}
+		else
+		{
+			ventana.setVisible(false);
+		}
+	}
+	@Override
+	public void windowClosed(WindowEvent e)
+	{
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void windowIconified(WindowEvent e)
+	{
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void windowDeiconified(WindowEvent e)
+	{
+		// TODO Auto-generated method stu
+	}
+	@Override
+	public void windowActivated(WindowEvent e)
+	{
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void windowDeactivated(WindowEvent e)
+	{
+		// TODO Auto-generated method stub
+	}
+}
+
+
+
+
+
