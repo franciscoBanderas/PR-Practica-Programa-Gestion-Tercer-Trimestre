@@ -1,0 +1,169 @@
+package es.Estudium.Tema7;
+
+import java.awt.Button;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+
+public class Login implements WindowListener, ActionListener 
+
+{
+	// Atributos, Componentes, campos,..
+	// Diseño de una ventana
+
+	Frame ventana= new Frame("Login"); // crear la ventana
+	
+	Label lblUsuario= new Label("Usuario");
+	Label lblClave= new Label("Clave    ");
+	TextField txtUsuario= new TextField("Admin");
+	TextField txtClave= new TextField("Admin");
+	Button btnAceptar= new Button("Aceptar");
+	Button btnCancelar= new Button ("Cancelar");
+	Dialog dlgMensaje= new Dialog(ventana, "Mensaje", true);
+	Label lblMensaje= new Label("XXXXXXXXXXXXX");
+	 
+	
+ 
+	//constructor
+
+	public Login() {
+
+		//Listener
+		ventana.addWindowListener(this);
+		dlgMensaje.addWindowListener(this);
+		btnAceptar.addActionListener(this);
+		btnCancelar.addActionListener(this);
+
+		//Pantalla
+		ventana.setSize(185, 140); // Ancho y altura
+		ventana.setResizable(false);// no permitir redimensionar
+
+		ventana.setLayout(new FlowLayout());// fijar la distribución
+		ventana.add(lblUsuario);
+		ventana.add(txtUsuario);
+		ventana.add(lblClave);
+		txtClave.setEchoChar('*');// para no mostrar la constraseña
+		ventana.add(txtClave);
+		ventana.add(btnAceptar);
+		ventana.add(btnCancelar);
+		ventana.setLocationRelativeTo(null);//fijar que la ventana salga
+		ventana.setVisible(true);//mostrar la ventana
+		
+	}
+
+	public static void main(String[] args) { 
+
+		new Login();
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent ae) {
+
+
+		if(ae.getSource().equals(btnCancelar))
+		{
+			txtUsuario.setText("");
+			txtClave.setText("");
+			txtUsuario.requestFocus();
+		}
+
+		else if (ae.getSource().equals(btnAceptar))
+		{
+
+			// coger los textos de la ventana: usuario y clave
+			String usuario= txtUsuario.getText();
+			String clave=txtClave.getText();
+			// conectar  BD
+			BaseDeDatos bd=new BaseDeDatos();
+			bd.conectar();
+			//hacer un select
+			int resultado=bd.consultar("Select * from usuarios where nombreUsuario= '"+usuario+
+					"'and claveUsuario=SHA2('"+clave+"',256);");
+			
+
+			//caso afirmatico: mostrar menú principal
+			// caso negativo (-1): Mostrar un mensaje de Error
+			if(resultado==-1)
+			{
+				dlgMensaje.setSize(180,75); 
+				dlgMensaje.setLayout(new FlowLayout());
+				dlgMensaje.setResizable(false);
+				lblMensaje.setText("Credenciales incorrectas");
+				dlgMensaje.add(lblMensaje);
+				dlgMensaje.setLocationRelativeTo(null);
+				dlgMensaje.setVisible(true);
+				
+
+			}
+			else
+			{
+               // caso afirmativo (0-1):Mostrar Menú Principal
+				new MenuPrincipal(resultado);
+				ventana.setVisible(false);
+			}
+			// desconectar la base de datos
+			bd.desconectar();
+
+		}
+
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+
+		if(dlgMensaje.isActive())
+		{
+			dlgMensaje.setVisible(false);
+		}
+
+		else
+		{
+			System.exit(0);
+		}
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
