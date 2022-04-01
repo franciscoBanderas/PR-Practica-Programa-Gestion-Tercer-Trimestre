@@ -1,0 +1,85 @@
+ackage es.Estudium.Tema7;
+
+import java.awt.Button;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.TextArea;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+public class ConsultaCompranEntregan implements WindowListener, ActionListener {
+	Frame ventana= new Frame ("Listado de compras y entregas");
+	TextArea txaListado= new TextArea(5,30);
+	Button btnPdf= new Button("Exportar a PDF");
+	BaseDeDatos bd= new BaseDeDatos();
+	
+	public ConsultaCompranEntregan()
+	{
+		// Listener
+		ventana.addWindowListener(this);
+		//Pantalla
+		ventana.setSize(237, 180); // Ancho y altura
+		ventana.setResizable(false);// no permitir redimensionar
+		
+		ventana.setLayout(new FlowLayout());
+		// rellenar el TextArea con la información de la base de datos
+		//Conectar
+		bd.conectar();
+		//Sacar la información y meterla en el TextArea
+		txaListado.setText(bd.ConsultaCompranEntregan());
+		//Desconectar
+		bd.desconectar();
+		ventana.add(txaListado);
+		ventana.add(btnPdf);
+		
+		ventana.setLocationRelativeTo(null);//fijar que la ventana salga
+		ventana.setVisible(true);//mostrar la ventana
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// Tercer trimestre
+		
+	}
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowClosing(WindowEvent e) {
+		ventana.setVisible(false);
+		
+	}
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
+
+
+
+
