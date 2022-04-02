@@ -23,8 +23,8 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 	Button btnEditar = new Button("Editar");
 
 	Dialog dlgEditar= new Dialog (ventana,"Edición repartidor", true);
-	Label lblcabecera2= new Label("Editando el cliente nº X");
-	Label lblId= new Label("Nª Cliente:");
+	Label lblcabecera2= new Label("Editando al repartidor nº X");
+	Label lblId= new Label("Nª repartidor:");
 	Label lblNombre= new Label("Nombre");
 	Label lblApellidos= new Label("Apellidos");
 	TextField txtId= new TextField(15);
@@ -75,7 +75,7 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 	private void rellenarChoiceRepartidores() {
 		choRepartidores.removeAll();
 		// Rellenar el Choice
-		choRepartidores.add("Elegir Cliente...");
+		choRepartidores.add("Elegir Repatidor");
 		// Conectar BD
 		bd.conectar();
 		//Sacar a los clientes de la tabla
@@ -104,7 +104,7 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 
 		if(evento.getSource().equals(btnEditar))
 		{
-			if (!choRepartidores.getSelectedItem().equals("Elegir repartidor..."))
+			if (!choRepartidores.getSelectedItem().equals("Elegir Repatidor..."))
 			{ 
 				String[] seleccionado=choRepartidores.getSelectedItem().split("-");
 				//Conectar BD y sacar los datos del cliente selecionado
@@ -157,7 +157,7 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 
 			if(resultado==0)			
 			{
-				lblMensaje.setText("Modificación correcta.");
+				lblMensaje.setText("Modificación correcta");
 			}
 
 			else 
@@ -232,6 +232,5 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 	}
 
 }
-
 
 
