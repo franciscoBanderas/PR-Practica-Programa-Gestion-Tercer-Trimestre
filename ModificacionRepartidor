@@ -17,8 +17,8 @@ import java.sql.SQLException;
 public class ModificacionRepartidor implements WindowListener, ActionListener {
 
 	// componentes
-	Frame ventana = new Frame ("Modificación de cliente");
-	Label lblCabecera = new Label ("Elegir El cliente a modificar");
+	Frame ventana = new Frame ("Modificación de repartidor");
+	Label lblCabecera = new Label ("Elegir El repartidor a modificar");
 	Choice choRepartidores = new Choice();
 	Button btnEditar = new Button("Editar");
 
@@ -232,5 +232,6 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 	}
 
 }
+
 
 
