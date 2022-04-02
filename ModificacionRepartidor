@@ -104,7 +104,7 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 
 		if(evento.getSource().equals(btnEditar))
 		{
-			if (!choRepartidores.getSelectedItem().equals("Elegir Cliente..."))
+			if (!choRepartidores.getSelectedItem().equals("Elegir repartidor..."))
 			{ 
 				String[] seleccionado=choRepartidores.getSelectedItem().split("-");
 				//Conectar BD y sacar los datos del cliente selecionado
