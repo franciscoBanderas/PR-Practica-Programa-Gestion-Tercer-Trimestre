@@ -34,8 +34,13 @@ public class AltaRepartidor implements WindowListener, ActionListener {
 		BaseDeDatos bd= new BaseDeDatos();
 
 		//constructor
-		public AltaRepartidor() 	
+		
+		int tipoUsuario;
+		
+		public AltaRepartidor(int tipoUsuario) 	
 		{
+			this.tipoUsuario = tipoUsuario;
+			
 			// Listener
 			ventana.addWindowListener(this);
 			dlgMensaje.addWindowListener(this);
@@ -75,7 +80,7 @@ public class AltaRepartidor implements WindowListener, ActionListener {
 
 				// hacer el insert con esos datos
 				String Sentencia= "Insert into repartidores values (null,'"+nombre+"','"+apellidos+"');";
-				int resultado= bd.AltaRepartidor(Sentencia);
+				int resultado= bd.AltaRepartidor(Sentencia, tipoUsuario);
 
 				if(resultado==0)			
 				{
