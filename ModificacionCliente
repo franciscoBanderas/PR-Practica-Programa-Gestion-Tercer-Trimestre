@@ -1,0 +1,297 @@
+package es.Estudium.Tema7;
+
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class ModificacionCliente implements WindowListener, ActionListener {
+	// componentes
+		Frame ventana = new Frame ("Modificación Cliente");
+		Label lblCabecera = new Label ("Elegir el cliente a modificar");
+		Choice choClientes = new Choice();
+		Button btnEditar = new Button("Editar");
+
+		Dialog dlgEditar= new Dialog (ventana,"Edición Clientes", true);
+		Label lblcabecera2= new Label("Editando al cliente nº X");
+		Label lblId= new Label("Nª Cliente:");
+		TextField txtId= new TextField(15);
+		Label lblNombreCliente= new Label("Nombre");
+		TextField txtNombreCliente= new TextField(15);
+		Label lblApellidosCliente= new Label("Apellidos");
+		TextField txtApellidosCliente= new TextField(15);
+		Label lblDniCliente= new Label("Dni");
+		TextField txtDniCliente= new TextField(15);
+		Label lblDireccionCliente= new Label("Dirección");
+		TextField txtDireccionCliente= new TextField(15);
+		Label lblCodigoPostalCliente= new Label("Código postal");
+		TextField txtCodigoPostalCliente= new TextField(15);
+		Label lblTelefonoCliente= new Label("telefono");
+		TextField txtTelefonoCliente= new TextField(15);
+		Label lblProvinciaCliente= new Label("Provincia");
+		TextField txtProvinciaCliente= new TextField(15);
+		Label lblCorreoElectronicoCliente= new Label("Correo electrónico");
+		TextField txtCorreoElectronicoCliente= new TextField(15);
+		Label lblPaisCliente= new Label("País");
+		TextField txtPaisCliente= new TextField(15);
+		
+	
+
+
+		Button btnModificar= new Button ("Modificar");
+		Button btnCancelar= new Button ("Cancelar");
+
+		Dialog dlgMensaje = new Dialog(ventana,"Confirmación", true);
+		Label lblMensaje = new Label("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+		BaseDeDatos bd = new BaseDeDatos();
+		ResultSet rs = null;
+		int tipoUsuario;
+
+
+
+		public ModificacionCliente(int tipoUsuario){
+			this.tipoUsuario=tipoUsuario;
+			//Listener
+			ventana.addWindowListener(this);
+			btnEditar.addActionListener(this);
+			btnModificar.addActionListener(this);
+			btnCancelar.addActionListener(this);
+			dlgEditar.addWindowListener(this);
+			dlgMensaje.addWindowListener(this);
+
+			//Pantalla
+
+			ventana.setSize(800,500);
+			ventana.setResizable(false);
+
+			ventana.setLayout(new FlowLayout());
+			ventana.add(lblCabecera);
+
+
+			rellenarChoiceClientes();
+			ventana.add(choClientes);
+			ventana.add(btnEditar);
+
+			ventana.setLocationRelativeTo(null);
+			ventana.setVisible(true);
+		}
+
+		private void rellenarChoiceClientes() {
+			choClientes.removeAll();
+			// Rellenar el Choice
+			choClientes.add("Elegir un cliente");
+			// Conectar BD
+			bd.conectar();
+			//Sacar a los clientes de la tabla
+			rs=bd.rellenarClientes();
+			try
+			{
+				while (rs.next())
+				{
+					choClientes.add(rs.getInt("idCliente")+"-" +rs.getString("nombreCliente")+"-"+rs.getString("apellidosCliente")+
+					"-" +rs.getString("dniCliente")+"-"+rs.getString("direccionCliente")+"-"+rs.getString("CodigoPostalCliente")+"-"+rs.getString("telefonoCliente")+"-" +rs.getString("provinciaCliente")+
+					"-" +rs.getString("correoElectronicoCliente")+"-"+rs.getString("paisCliente"));
+
+				}
+			}
+			catch(Exception e)
+			{
+				System.out.println(e.getMessage());
+			}
+
+			//Sacar los datos de la tabla personas
+			// Registro a registro, meteros en el choice
+			//Desconectar la base de datos
+			bd.desconectar();
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evento) {
+
+			if(evento.getSource().equals(btnEditar))
+			{
+				if (!choClientes.getSelectedItem().equals("Elegir un cliente"))
+				{ 
+					String[] seleccionado=choClientes.getSelectedItem().split("-");
+					//Conectar BD y sacar los datos del cliente selecionado
+					bd.conectar();
+					rs=bd.modificacionCliente(seleccionado[0], tipoUsuario);
+					try 
+
+					{    rs.next();
+					txtNombreCliente.setText(rs.getString("nombreCliente"));
+					txtApellidosCliente.setText(rs.getString("apellidosCliente"));
+					txtDniCliente.setText(rs.getString("dniCliente"));
+					txtDireccionCliente.setText(rs.getString("direccionCliente"));
+					txtCodigoPostalCliente.setText(rs.getString("codigoPostalCliente"));
+					txtTelefonoCliente.setText(rs.getString("telefonoCliente"));
+					txtProvinciaCliente.setText(rs.getString("provinciaCliente"));
+					txtCorreoElectronicoCliente.setText(rs.getString("correoElectronicoCliente"));
+					txtPaisCliente.setText(rs.getString("paisCliente"));	
+					
+					}
+
+					catch (SQLException sqle)
+					{}	
+
+					bd.desconectar();
+
+					//Musestro los datos del cliente elegido
+					// en la pantalla de edición
+
+
+					dlgEditar.setSize(600,300);
+					dlgEditar.setResizable(true);
+
+					dlgEditar.setLayout(new FlowLayout());
+					dlgEditar.add(lblcabecera2);
+					txtId.setEnabled(false);
+					txtId.setText(seleccionado[0]); // rs.getInt("idCliente")
+					dlgEditar.add(txtId);
+					
+					dlgEditar.add(lblNombreCliente);
+					dlgEditar.add(txtNombreCliente);
+					
+					dlgEditar.add(lblApellidosCliente);
+					dlgEditar.add(txtApellidosCliente);
+					
+					dlgEditar.add(lblDniCliente);
+					dlgEditar.add(txtDniCliente);
+					
+					dlgEditar.add(lblDireccionCliente);
+					dlgEditar.add(txtDireccionCliente);
+					
+					dlgEditar.add(lblCodigoPostalCliente);
+					dlgEditar.add(txtCodigoPostalCliente);
+					
+					dlgEditar.add(lblTelefonoCliente);
+					dlgEditar.add(txtTelefonoCliente);
+					
+					dlgEditar.add(lblProvinciaCliente);
+					dlgEditar.add(txtProvinciaCliente);
+					
+					dlgEditar.add(lblCorreoElectronicoCliente);
+					dlgEditar.add(txtCorreoElectronicoCliente);
+					
+					dlgEditar.add(lblPaisCliente);
+					dlgEditar.add(txtPaisCliente);
+					
+					dlgEditar.add(btnModificar);
+					dlgEditar.add(btnCancelar);
+					dlgEditar.setLocationRelativeTo(null);
+					dlgEditar.setVisible(true);
+
+				}    
+				
+			
+			}
+			else if(evento.getSource().equals(btnModificar))
+			{
+				
+				bd.conectar();
+				int resultado=bd.actualizarCliente(txtId.getText(),txtNombreCliente.getText(), txtApellidosCliente.getText(),
+						 txtDniCliente.getText(), txtDireccionCliente.getText(), txtCodigoPostalCliente.getText(),
+						txtTelefonoCliente.getText(), txtProvinciaCliente.getText(),txtCorreoElectronicoCliente.getText(), 
+						txtPaisCliente.getText(), tipoUsuario);
+				
+				bd.desconectar();
+				rellenarChoiceClientes();
+                     
+				
+				if(resultado==0)			
+				{
+					lblMensaje.setText("Modificación correcta");
+				}
+
+				else 
+
+				{
+					lblMensaje.setText("Error en la modificación.");
+				}
+
+				dlgMensaje.setSize(180,300); 
+				dlgMensaje.setLayout(new FlowLayout());
+				dlgMensaje.setResizable(false);
+				dlgMensaje.add(lblMensaje);
+				dlgMensaje.setLocationRelativeTo(null);
+				dlgMensaje.setVisible(true);
+
+
+			}
+			
+			else if (evento.getSource().equals(btnCancelar))
+			{
+				dlgEditar.setVisible(false);
+			}
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+
+			if (dlgEditar.isActive())
+			{
+				dlgEditar.setVisible(false);
+			}
+			else if (dlgEditar.isActive())
+			{
+				dlgMensaje.setVisible(false);
+			}
+			else
+			{
+				ventana.setVisible(false);
+			}
+
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+	}
+
+
+
+
+
