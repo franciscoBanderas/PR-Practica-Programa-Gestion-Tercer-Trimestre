@@ -31,10 +31,12 @@ public class BajaCompranEntregan implements  WindowListener, ActionListener {
 	BaseDeDatos bd = new BaseDeDatos();
 	ResultSet rs = null;
 	int idPersonaBorrar = 0;
+	int tipoUsuario;
 
 	//Constructor
-	public BajaCompranEntregan()
+	public BajaCompranEntregan(int tipoUsuario)
 	{
+		this.tipoUsuario=tipoUsuario;
 		//Listener
 		ventana.addWindowListener(this);
 		btnBorrar.addActionListener(this);
@@ -47,7 +49,7 @@ public class BajaCompranEntregan implements  WindowListener, ActionListener {
 
 
 		// Rellenar el Choice
-		choCompranEntregan.add("Seleccionar un cliente...");
+		choCompranEntregan.add("Seleccionar una compra-entrega...");
 		// Conectar BD
 		bd.conectar();
 		//Sacar a los clientes de la tabla
@@ -98,7 +100,7 @@ public class BajaCompranEntregan implements  WindowListener, ActionListener {
 		{
 			bd.conectar();
 			String[] array = choCompranEntregan.getSelectedItem().split("-");
-			int resultado= bd.borrarCompranEntregan(Integer.parseInt(array[0]));
+			int resultado= bd.borrarCompranEntregan(Integer.parseInt(array[0]), tipoUsuario);
 			
 			if (resultado == 0)
 			{
