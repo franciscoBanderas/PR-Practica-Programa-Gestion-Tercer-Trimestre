@@ -29,10 +29,12 @@ public class BajaCliente implements WindowListener, ActionListener
 	BaseDeDatos bd = new BaseDeDatos();
 	ResultSet rs = null;
 	int idPersonaBorrar = 0;
+	int tipoUsuario;
 
 	//Constructor
-	public BajaCliente()
+	public BajaCliente(int tipoUsuario)
 	{
+		this.tipoUsuario = tipoUsuario;
 		//Listener
 		ventana.addWindowListener(this);
 		btnBorrar.addActionListener(this);
@@ -57,7 +59,7 @@ public class BajaCliente implements WindowListener, ActionListener
 				choClientes.add(rs.getInt("idCliente") + "-" +rs.getString("nombreCliente")+" "+rs.getString("apellidosCliente")+
 						"- "+rs.getString("dniCliente")+" "+rs.getString("direccionCliente")+"- "+rs.getInt("codigoPostalCliente")+"- "
 						+rs.getInt("telefonoCliente")+"- "+rs.getString("provinciaCliente")+"- "+rs.getString("correoElectronicoCliente")+"-"+rs.getString("paisCliente"));
-
+				
 			}
 		}
 		catch(Exception e)
@@ -97,7 +99,10 @@ public class BajaCliente implements WindowListener, ActionListener
 		{
 			bd.conectar();
 			String[] array = choClientes.getSelectedItem().split("-");
-			int resultado= bd.borrarCliente(Integer.parseInt(array[0]));
+                 
+			
+		
+			int resultado= bd.borrarCliente(Integer.parseInt(array[0]), tipoUsuario);
 			
 			if (resultado == 0)
 			{
@@ -193,5 +198,7 @@ public class BajaCliente implements WindowListener, ActionListener
 		// TODO Auto-generated method stub
 	}
 }
+
+
 
 
