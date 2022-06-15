@@ -1,0 +1,157 @@
+package es.Estudium.Tema7;
+
+import java.awt.Button;
+import java.awt.Desktop;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.TextArea;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+
+public class ConsultaVehiculo implements WindowListener, ActionListener {
+	
+	Frame ventana= new Frame ("Listado de Vehiculos");
+	TextArea txaListado= new TextArea(5,30);
+	Button btnPdf= new Button("Exportar a PDF");
+	BaseDeDatos bd= new BaseDeDatos();
+	public static final String DEST = "ConsultaVehiculos.pdf";
+	
+	PdfFont font;
+	PdfWriter writer;
+	Connection connection = null;
+	Statement statement = null;
+	ResultSet resultSet = null;
+	int tipoUsuario;
+	
+	public 	ConsultaVehiculo(int tipoUsuario)
+	{
+		
+		
+		btnPdf.addActionListener(this);
+		this.tipoUsuario=tipoUsuario;
+		// Listener
+		ventana.addWindowListener(this);
+		//Pantalla
+		ventana.setSize(237, 180); // Ancho y altura
+		ventana.setResizable(false);// no permitir redimensionar
+		
+		ventana.setLayout(new FlowLayout());
+		// rellenar el TextArea con la información de la base de datos
+		//Conectar
+		bd.conectar();
+		//Sacar la información y meterla en el TextArea
+		txaListado.setText(bd.consultarVehiculos(tipoUsuario));
+		//Desconectar
+		bd.desconectar();
+		ventana.add(txaListado);
+		ventana.add(btnPdf);
+		
+		ventana.setLocationRelativeTo(null);//fijar que la ventana salga
+		ventana.setVisible(true);//mostrar la ventana
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		if(e.getSource().equals(btnPdf)) //FRAN
+		{
+			
+			//Initialize PDF writer
+			try
+			{
+				
+				writer = new PdfWriter(DEST);
+			}
+			catch (FileNotFoundException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			//Initialize PDF document
+			PdfDocument pdf = new PdfDocument(writer);
+			try (// Initialize document
+					Document document = new Document(pdf)) {
+				//Add paragraph to the document
+				document.add(new Paragraph("Vehiculo"));
+				// Create a PdfFont
+				/*
+				 * try { font = PdfFontFactory.createFont(StandardFonts.HELVETICA); } catch
+				 * (java.io.IOException evento) {
+				 * 
+				 * evento.printStackTrace(); }
+				 */
+
+				bd.conectar();
+				document.add(new Paragraph(bd.consultarVehiculos(tipoUsuario)));
+				bd.desconectar();
+				document.close();
+				
+				
+				
+				try {
+					
+					Desktop.getDesktop().open(new File(DEST));
+					
+				}catch (java.io.IOException evento)
+				{
+					evento.printStackTrace();
+				}
+				bd.desconectar();
+			}
+			
+			
+		}
+		
+		
+	}
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowClosing(WindowEvent e) {
+		ventana.setVisible(false);
+		
+	}
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
+
+
