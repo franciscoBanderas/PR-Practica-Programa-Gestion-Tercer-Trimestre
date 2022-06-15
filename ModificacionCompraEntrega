@@ -1,0 +1,355 @@
+
+
+package es.Estudium.Tema7;
+
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class ModificacionComprEntrega  implements  WindowListener, ActionListener {
+
+
+	Frame ventana = new Frame ("Modificar CompranEntrega");
+	Label lblCabecera = new Label ("Elegir registro compra entrega");
+	Label lblDesdeCompraEntrega= new Label("Desde compra- entrega");
+	Label lblHastaCompraEntrega= new Label("Hasta compra- entrega");
+	TextField txtDesdeCompraEntrega= new TextField(15);
+	TextField txtHastaCompraEntrega= new TextField(15);
+	Choice choCompranEntregan = new Choice();
+	Button btnModificar = new Button("Modificar");
+	Choice choClientes = new Choice();
+	Choice choRepartidores = new Choice();
+	Dialog dlgEditar= new Dialog (ventana,"Edición Clientes", true);
+	Dialog dlgModificar = new Dialog(ventana,"Modificación", true);
+	Button btnModificar2 = new Button("Modificar2");
+	Button btnSi = new Button("Sí");
+	Button btnNo = new Button("No");
+	Button btnCancelar= new Button("cancelar");
+	Dialog dlgMensaje = new Dialog(ventana,"Mensaje", true);
+	Label lblMensaje = new Label("Modificación correcta");
+
+	BaseDeDatos bd = new BaseDeDatos();
+	ResultSet rs = null;
+	ResultSet rs2 = null;
+	int idPersonaBorrar = 0;
+	int idCompraEntrega = 0;
+	int idRepartidor = 0;
+	int idCliente = 0;
+	int fkrepartidores;
+	int fkclientes;
+	int tipoUsuario;
+
+	//Constructor
+	public 	ModificacionComprEntrega( int tipoUsuario)
+	{
+		
+		this.tipoUsuario=tipoUsuario;
+		//Listener
+		ventana.addWindowListener(this);
+		btnModificar.addActionListener(this);
+
+		//Pantalla
+		ventana.setLayout(new FlowLayout());
+		ventana.setSize(300,200);
+		ventana.setResizable(false);
+		ventana.add(lblCabecera);
+
+
+		// Rellenar el Choice
+		choCompranEntregan.add("Seleccionar una compra-entrega...");
+		// Conectar BD
+		bd.conectar();
+		//Sacar a los clientes de la tabla
+		rs=bd.rellenarChoCompranEntregan();
+		try
+		{
+			while (rs.next())
+			{
+				choCompranEntregan.add(rs.getInt("idCompranEntregan") + "-" +rs.getString("desdeCompranEntregan")+"-"+rs.getString("hastaCompranEntregan")+
+						"-"+rs.getInt("idRepartidorFK")+"-"+rs.getInt("idClienteFK"));
+
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
+
+		//Sacar los datos de la tabla personas
+		// Registro a registro, meteros en el choice
+		//Desconectar la base de datos
+		bd.desconectar();
+		ventana.add(choCompranEntregan);
+		ventana.add(btnModificar);
+
+		ventana.setLocationRelativeTo(null);
+		ventana.setVisible(true);
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent evento) {
+
+
+		//Si clicamos en Editar
+		if(evento.getSource().equals(btnModificar))
+		{
+			
+			//si intentamos borrar "Seleccionarpersona
+			if (choCompranEntregan.getSelectedItem().equals("Seleccionar una compraEntrega..."))
+			{
+				lblMensaje.setText("Debes seleccionar una compra entrega");
+				mostrarMensaje();
+			}
+			else
+			{
+				
+				
+				String[] seleccionado=choCompranEntregan.getSelectedItem().split("-");
+				//Conectar BD y sacar los datos del cliente selecionado
+				bd.conectar();
+				rs=bd.ModificacionCompranEntregan(seleccionado[0], tipoUsuario);
+				try 
+
+				{    rs.next();
+				idCompraEntrega= rs.getInt("idCompranEntregan");
+				txtDesdeCompraEntrega.setText(rs.getString("DesdeCompranEntregan"));
+				txtHastaCompraEntrega.setText(rs.getString("HastaCompranEntregan"));
+				fkrepartidores = rs.getInt("idRepartidorFK");
+				fkclientes = rs.getInt("idClienteFK");
+					
+				
+				
+				}
+
+				catch (SQLException sqle)
+				{}	
+
+				bd.desconectar();
+	
+				choRepartidores.removeAll();
+				// Rellenar el Choice
+				choRepartidores.add("Elegir Repatidor");
+				// Conectar BD
+				bd.conectar();
+				//Sacar a los clientes de la tabla
+				rs=bd.rellenarRepartidores();
+				
+				int posicionRepartidor=0;
+				int i=1;
+				try
+				{ 
+				
+					while (rs.next())
+					{
+						
+						choRepartidores.add(rs.getInt("idRepartidor")+ "-" +rs.getString("nombreRepartidor")+" "+rs.getString("apellidosRepartidor"));
+                         
+						if (fkrepartidores==rs.getInt("idRepartidor")) {
+							
+							posicionRepartidor=i;
+					
+						}
+						i++;
+					}
+				}
+				catch(Exception e)
+				{
+					System.out.println(e.getMessage());
+				}
+				choRepartidores.select(posicionRepartidor);
+
+				//Sacar los datos de la tabla personas
+				// Registro a registro, meteros en el choice
+				//Desconectar la base de datos
+				bd.desconectar();
+				choClientes.removeAll();
+				// Rellenar el Choice
+				choClientes.add("Elegir Cliente");
+				// Conectar BD
+				bd.conectar();
+				//Sacar a los clientes de la tabla
+				rs=bd.rellenarClientes();
+				
+				int posicionCliente=0;
+				int i2=1;
+				try
+				{ 
+				
+					while (rs.next())
+					{
+						
+						choClientes.add(rs.getInt("idCliente")+ "-" +rs.getString("nombreCliente")+" "+rs.getString("apellidosCliente")
+						+" "+rs.getString("dniCliente")+" "+rs.getString("direccionCliente")+" "+rs.getString("codigoPostalCliente")
+						+" "+rs.getString("telefonoCliente")+" "+rs.getString("provinciaCliente")+" "+rs.getString("correoElectronicoCliente")
+						+" "+rs.getString("paisCliente"));
+                         
+						if (fkclientes==rs.getInt("idCliente")) {
+							
+							posicionCliente=i2;
+					
+						}
+						i2++;
+						
+					}
+				}
+				catch(Exception e)
+				{
+					System.out.println(e.getMessage());
+				}
+				choClientes.select(posicionCliente);
+
+				//Sacar los datos de la tabla personas
+				// Registro a registro, meteros en el choice
+				//Desconectar la base de datos
+				bd.desconectar();
+				
+				
+				//sino muestra el diálogo para elegir persona
+				//Montar la ventana Modificación
+				dlgModificar.setLayout(new FlowLayout());
+				dlgModificar.setSize(500,500); //ancho , alto
+				dlgModificar.add(choClientes);
+				
+				dlgModificar.add(choRepartidores);
+				dlgModificar.add(btnModificar2);
+				dlgModificar.add(btnCancelar);
+				dlgModificar.add(lblDesdeCompraEntrega);
+				dlgModificar.add(txtDesdeCompraEntrega);
+				dlgModificar.add(lblHastaCompraEntrega);
+				dlgModificar.add(txtHastaCompraEntrega);
+				
+				 
+				
+				//Listener
+				dlgModificar.addWindowListener(this);
+				btnModificar.addActionListener(this);
+				btnModificar2.addActionListener(this);
+				btnCancelar.addActionListener(this);
+
+				//mostrar en pantalla
+				dlgModificar.setResizable(true);
+				dlgModificar.setLocationRelativeTo(null);
+				dlgModificar.setVisible(true);
+			}
+		}
+		//Botón cancelar muestra ventana principal
+		else if(evento.getSource().equals(btnCancelar))
+		{
+			ventana.setVisible(false);
+		}
+		//botón modificar si todo va bien indicamos qué hacer
+		//modifica al cliente con la siguiente instrucción
+		else if(evento.getSource().equals(btnModificar2))
+		{
+	
+				
+				bd.conectar();
+				// Coger los datos
+				
+				String[] seleccionado = choClientes.getSelectedItem().split("-");
+				
+				int idClienteFK = Integer.parseInt(seleccionado[0]);
+				
+				String[] seleccionado1 = choRepartidores.getSelectedItem().split("-");
+				
+				int idProductoFK = Integer.parseInt(seleccionado1[0]);
+				
+				//String[] seleccionado2 = choCompranEntregan.getSelectedItem().split("-");
+				//int idCompranEntregan = Integer.parseInt(seleccionado2[0]);
+
+				if ((bd.actualizarCompranEntregan(idCompraEntrega, txtDesdeCompraEntrega.getText(), txtHastaCompraEntrega.getText(), idProductoFK, idClienteFK, tipoUsuario)==0))
+				{
+					//Si todo bien
+					lblMensaje.setText("Modificación correcta");
+				}
+				//Sino mostrar mensaje de error
+				else
+				{
+					lblMensaje.setText("Modificación errónea");
+				}
+				//Desconectar la base
+				bd.desconectar();
+				dlgModificar.setVisible(false);
+				mostrarMensaje();
+				 }
+				 
+
+	}		
+
+
+
+	private void mostrarMensaje()
+	{
+		dlgMensaje.setLayout(new FlowLayout());
+		dlgMensaje.setSize(300,200);
+		dlgMensaje.addWindowListener(this);
+		dlgMensaje.add(lblMensaje);
+
+		//lblMensaje.setText("Error");
+		dlgMensaje.setLocationRelativeTo(null);
+		dlgMensaje.setVisible(true);
+		//dlgConfirmacion.setVisible(false);
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		if (dlgMensaje.isActive())
+		{
+			dlgMensaje.setVisible(false);
+		}
+
+		else
+		{
+			ventana.setVisible(false);
+		}
+	}
+
+
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+}
