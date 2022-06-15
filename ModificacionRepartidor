@@ -24,7 +24,7 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 
 	Dialog dlgEditar= new Dialog (ventana,"Edición repartidor", true);
 	Label lblcabecera2= new Label("Editando al repartidor nº X");
-	Label lblId= new Label("Nª repartidor:");
+	Label lblId= new Label("Nª Repartidor:");
 	Label lblNombre= new Label("Nombre");
 	Label lblApellidos= new Label("Apellidos");
 	TextField txtId= new TextField(15);
@@ -43,11 +43,13 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 
 	BaseDeDatos bd = new BaseDeDatos();
 	ResultSet rs = null;
+	int tipoUsuario;
 
 
 
-	public ModificacionRepartidor (){
+	public ModificacionRepartidor (int tipoUsuario){
 		//Listener
+		this.tipoUsuario= tipoUsuario;
 		ventana.addWindowListener(this);
 		btnEditar.addActionListener(this);
 		btnModificar.addActionListener(this);
@@ -104,12 +106,12 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 
 		if(evento.getSource().equals(btnEditar))
 		{
-			if (!choRepartidores.getSelectedItem().equals("Elegir Repatidor..."))
+			if (!choRepartidores.getSelectedItem().equals("Elegir Repatidor"))
 			{ 
 				String[] seleccionado=choRepartidores.getSelectedItem().split("-");
 				//Conectar BD y sacar los datos del cliente selecionado
 				bd.conectar();
-				rs=bd.modificacionRepartidores(seleccionado[0]);
+				rs=bd.modificacionRepartidores(seleccionado[0], tipoUsuario);
 				try 
 
 				{    rs.next();
@@ -140,6 +142,7 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 				dlgEditar.add(lblApellidos);
 
 				dlgEditar.add(txtApellidos);
+				
 				dlgEditar.add(btnModificar);
 				dlgEditar.add(btnCancelar);
 				dlgEditar.setLocationRelativeTo(null);
@@ -151,7 +154,7 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 		{
 			
 			bd.conectar();
-			int resultado=bd.actualizarRepartidor(txtId.getText(),txtNombre.getText(), txtApellidos.getText());
+			int resultado=bd.actualizarRepartidor(txtId.getText(),txtNombre.getText(), txtApellidos.getText(), tipoUsuario);
 			bd.desconectar();
 			rellenarChoiceRepartidores();
 
@@ -174,6 +177,11 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 			dlgMensaje.setVisible(true);
 
 
+		}
+		
+		else if (evento.getSource().equals(btnCancelar))
+		{
+			dlgEditar.setVisible(false);
 		}
 	}
 
@@ -198,8 +206,11 @@ public class ModificacionRepartidor implements WindowListener, ActionListener {
 		{
 			ventana.setVisible(false);
 		}
-
+		
+		
 	}
+	
+	
 
 	@Override
 	public void windowClosed(WindowEvent e) {
