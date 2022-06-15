@@ -1,0 +1,270 @@
+package es.Estudium.Tema7;
+
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class ModificacionVehiculo implements WindowListener, ActionListener {
+	
+	Frame ventana = new Frame ("Modificación del vehiculos");
+	Label lblCabecera = new Label ("Elegir el vehiculo a modificar");
+	Choice choVehiculos = new Choice();
+	Button btnEditar = new Button("Editar");
+
+	Dialog dlgEditar= new Dialog (ventana,"Edición vehículo", true);
+	Label lblcabecera2= new Label("Editando al vehiculo nº X");
+	Label lblId= new Label("Nª del vehiculo:");
+	Label lblMatricula= new Label("Matricula del Vehículo");
+	Label lblTipo= new Label("Tipo de vehículo");
+	Label lblModelo= new Label("Modelo del vehículo");
+	Label lblMarca= new Label("Marca del vehículo");
+	
+	
+	
+	TextField txtId= new TextField(15);
+	TextField txtMatricula= new TextField(15);
+	TextField txtTipo= new TextField(15);
+	TextField txtModelo= new TextField(15);
+	TextField txtMarca= new TextField(15);
+
+
+	Button btnModificar= new Button ("Modificar");
+	Button btnCancelar= new Button ("Cancelar");
+
+	Dialog dlgMensaje = new Dialog(ventana,"Confirmación", true);
+	Label lblMensaje = new Label("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+	BaseDeDatos bd = new BaseDeDatos();
+	ResultSet rs = null;
+	int tipoUsuario;
+
+
+
+	public ModificacionVehiculo (int tipoUsuario){
+		this.tipoUsuario = tipoUsuario;
+		//Listener
+		ventana.addWindowListener(this);
+		btnEditar.addActionListener(this);
+		btnModificar.addActionListener(this);
+		btnCancelar.addActionListener(this);
+		dlgEditar.addWindowListener(this);
+		dlgMensaje.addWindowListener(this);
+
+		//Pantalla
+
+		ventana.setSize(350,150);
+		ventana.setResizable(false);
+
+		ventana.setLayout(new FlowLayout());
+		ventana.add(lblCabecera);
+
+
+		rellenarChoiceVehiculos();
+		ventana.add(choVehiculos);
+		ventana.add(btnEditar);
+
+		ventana.setLocationRelativeTo(null);
+		ventana.setVisible(true);
+	}
+
+	private void rellenarChoiceVehiculos() {
+		choVehiculos.removeAll();
+		// Rellenar el Choice
+		choVehiculos.add("Elegir el vehiculo");
+		// Conectar BD
+		bd.conectar();
+		//Sacar a los clientes de la tabla
+		rs=bd.rellenarVehiculos();
+		try
+		{
+			while (rs.next())
+			{
+				choVehiculos.add(rs.getInt("idVehiculo")+ "-" +rs.getString("MatriculaVehiculo")+"-"+rs.getString("tipoVehiculo")+
+				"-"+rs.getString("modeloVehiculo")+"-"+rs.getString("marcaVehiculo"));
+
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
+
+		//Sacar los datos de la tabla personas
+		// Registro a registro, meteros en el choice
+		//Desconectar la base de datos
+		bd.desconectar();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent evento) {
+
+		if(evento.getSource().equals(btnEditar))
+		{
+			if (!choVehiculos.getSelectedItem().equals("Elegir el vehiculo"))
+			{ 
+				String[] seleccionado=choVehiculos.getSelectedItem().split("-");
+				//Conectar BD y sacar los datos del cliente selecionado
+				bd.conectar();
+				rs=bd.modificacionVehiculo(seleccionado[0],  tipoUsuario);
+				try 
+
+				{    rs.next();
+				txtMatricula.setText(rs.getString("matriculaVehiculo"));
+				txtTipo.setText(rs.getString("tipoVehiculo"));
+				txtModelo.setText(rs.getString("modeloVehiculo"));
+				txtMarca.setText(rs.getString("marcaVehiculo"));
+				}
+
+				catch (SQLException sqle)
+				{}	
+
+				bd.desconectar();
+
+				//Musestro los datos del cliente elegido
+				// en la pantalla de edición
+
+
+				dlgEditar.setSize(200,400);
+				dlgEditar.setResizable(false);
+
+				dlgEditar.setLayout(new FlowLayout());
+				dlgEditar.add(lblcabecera2);
+				txtId.setEnabled(false);
+				txtId.setText(seleccionado[0]); // rs.getInt("idCliente")
+				dlgEditar.add(txtId);
+				
+				dlgEditar.add(lblMatricula);
+				dlgEditar.add(txtMatricula);
+				dlgEditar.add(lblTipo);
+				dlgEditar.add(txtTipo);
+				dlgEditar.add(lblModelo);
+				dlgEditar.add(txtModelo);
+				dlgEditar.add(lblMarca);
+				dlgEditar.add(txtMarca);
+				
+				
+				
+				
+				
+				;
+				
+				
+				
+				dlgEditar.add(btnModificar);
+				dlgEditar.add(btnCancelar);
+				dlgEditar.setLocationRelativeTo(null);
+				dlgEditar.setVisible(true);
+
+			}      
+		}
+		else if(evento.getSource().equals(btnModificar))
+		{
+			
+			bd.conectar();
+			int resultado=bd.actualizarVehiculo(txtId.getText(),txtMatricula.getText(),txtTipo.getText(), txtModelo.getText(),txtMarca.getText(), tipoUsuario);
+			bd.desconectar();
+			rellenarChoiceVehiculos();
+
+			if(resultado==0)			
+			{
+				lblMensaje.setText("Modificación correcta");
+			}
+
+			else 
+
+			{
+				lblMensaje.setText("Error en la modificación.");
+			}
+
+			dlgMensaje.setSize(180,75); 
+			dlgMensaje.setLayout(new FlowLayout());
+			dlgMensaje.setResizable(false);
+			dlgMensaje.add(lblMensaje);
+			dlgMensaje.setLocationRelativeTo(null);
+			dlgMensaje.setVisible(true);
+
+
+		}
+		
+		else if (evento.getSource().equals(btnCancelar))
+		{
+			dlgEditar.setVisible(false);
+		}
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+
+		if (dlgEditar.isActive())
+		{
+			dlgEditar.setVisible(false);
+		}
+		else if (dlgEditar.isActive())
+		{
+			dlgMensaje.setVisible(false);
+		}
+		else
+		{
+			ventana.setVisible(false);
+		}
+		
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
