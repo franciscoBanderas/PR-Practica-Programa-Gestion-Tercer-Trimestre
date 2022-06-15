@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
 
 public class MenuPrincipal implements WindowListener, ActionListener  {
 
@@ -39,27 +40,39 @@ public class MenuPrincipal implements WindowListener, ActionListener  {
 	MenuItem mniBajaCompranEntregan= new MenuItem("Eliminar compra entregan");
 	MenuItem mniModificacionCompranEntregan= new MenuItem("Modificacion Compra entregan");
 
+	Menu mnuAyuda= new Menu("Ayuda");
+	MenuItem mniAyuda= new MenuItem("Ayuda");
+
+	int tipoUsuario;
 	Label lblUsuario= new Label("");//Usuario
 
 
 	public MenuPrincipal(int tipoUsuario) 
 	{
+		this.tipoUsuario= tipoUsuario;
 		//Listener
 		ventana.addWindowListener(this);
 		mniConsultaClientes.addActionListener(this);
 		mniAltaCliente.addActionListener(this);
-        mniBajaCliente.addActionListener(this);
-        mniConsultaRepartidores.addActionListener(this);
-        mniAltaRepartidor.addActionListener(this);
-        mniModificacionRepartidor.addActionListener(this);
-        mniAltaCompranEntregan.addActionListener(this);
-        mniConsultaCompranEntregan.addActionListener(this);
-        mniBajaCompranEntregan.addActionListener(this);
-        mniModificacionCompranEntregan.addActionListener(this);
-        
+		mniBajaCliente.addActionListener(this);
+		mniConsultaRepartidores.addActionListener(this);
+		mniAltaRepartidor.addActionListener(this);
+		mniModificacionRepartidor.addActionListener(this);
+		mniAltaCompranEntregan.addActionListener(this);
+		mniConsultaCompranEntregan.addActionListener(this);
+		mniBajaCompranEntregan.addActionListener(this);
+		mniModificacionCompranEntregan.addActionListener(this);
+		mniAltaVehiculo.addActionListener(this);
+		mniModificacionCliente.addActionListener(this);
+		mniBajaRepartidor.addActionListener(this);
+		mniConsultaVehiculos.addActionListener(this);
+		mniBajaVehiculo.addActionListener(this);
+		mniModificacionVehiculo.addActionListener(this);
+		mniAyuda.addActionListener(this);
+
 		//Pantalla
 		ventana.setSize(350, 150); // Ancho y altura
-		ventana.setResizable(false);// no permitir redimensionar
+		ventana.setResizable(true);// no permitir redimensionar
 
 		ventana.setLayout(new FlowLayout());// fijar la distribución
 
@@ -72,7 +85,10 @@ public class MenuPrincipal implements WindowListener, ActionListener  {
 		mnuCompranEntregan.add(mniAltaCompranEntregan);
 		mnuCompranEntregan.add(mniConsultaCompranEntregan);
 		
-		
+		mnuAyuda.add(mniAyuda);
+		barraMenu.add(mnuAyuda);
+
+
 
 		if(tipoUsuario==1)
 		{		
@@ -80,39 +96,39 @@ public class MenuPrincipal implements WindowListener, ActionListener  {
 			mnuClientes.add(mniModificacionCliente);
 		}
 		barraMenu.add(mnuClientes);
-		
-		
-		
-		
-		
+
+
+
+
+
 		if(tipoUsuario==1)
 		{		
 			mnuRepartidores.add(mniBajaRepartidor);
 			mnuRepartidores.add(mniModificacionRepartidor);
 		}
-		
+
 		barraMenu.add(mnuRepartidores);
-		
-		
-		
-		
+
+
+
+
 		if(tipoUsuario==1)
 		{		
 			mnuVehiculos.add(mniBajaVehiculo);
 			mnuVehiculos.add(mniModificacionVehiculo);
 		}
-		
-		
+
+
 		barraMenu.add(mnuVehiculos);
-		
+
 		if(tipoUsuario==1)
 		{		
-		mnuCompranEntregan.add(mniBajaCompranEntregan);
-		mnuCompranEntregan.add(mniModificacionCompranEntregan);
+			mnuCompranEntregan.add(mniBajaCompranEntregan);
+			mnuCompranEntregan.add(mniModificacionCompranEntregan);
 		}
-		
+
 		barraMenu.add(mnuCompranEntregan);
-		
+
 		ventana.add(lblUsuario);
 		ventana.setMenuBar(barraMenu);
 
@@ -123,105 +139,152 @@ public class MenuPrincipal implements WindowListener, ActionListener  {
 
 	@Override
 	public void actionPerformed(ActionEvent evento) {
-		
+
 		if(evento.getSource().equals(mniConsultaClientes))
 		{
-			new ConsultaClientes();
+			new ConsultaClientes(tipoUsuario);
 		}
-		
+
 		else if(evento.getSource().equals(mniAltaCliente))
 		{
-			new AltaCliente();
+			new AltaCliente(tipoUsuario);
 		}
-       
+
 		else if(evento.getSource().equals(mniBajaCliente))
 		{
-			new BajaCliente();
+			new BajaCliente(tipoUsuario);
 		}
-		
+
 		else if(evento.getSource().equals(mniConsultaRepartidores))
 		{
-			new ConsultaRepartidores();
+			new ConsultaRepartidores(tipoUsuario);
 		}
-		
+
 		else if(evento.getSource().equals(mniAltaRepartidor))
 		{
-			new AltaRepartidor();
+			new AltaRepartidor(tipoUsuario);
 		}
-		
+
 		else if(evento.getSource().equals(mniModificacionRepartidor))
 		{
-			new ModificacionRepartidor();
+			new ModificacionRepartidor(tipoUsuario);
 		}
-		
+
 		else if(evento.getSource().equals(mniAltaCompranEntregan))
 		{
-			new AltaCompranEntregan();
+			new AltaCompranEntregan(tipoUsuario);
 		}
-		
+
 		else if(evento.getSource().equals(mniConsultaCompranEntregan))
 		{
-			new ConsultaCompranEntregan();
+			new ConsultaCompraEntrega(tipoUsuario);
 		}
-		
-		else if(evento.getSource().equals(mniModificacionCompranEntregan))
-		{
-			new BajaCompranEntregan();
-		}
-		
+
 		else if(evento.getSource().equals(mniBajaCompranEntregan))
 		{
-			new BajaCompranEntregan();
+			new BajaCompranEntregan(tipoUsuario);
+		}
+		else if(evento.getSource().equals(mniAltaVehiculo))
+		{
+			new AltaVehiculo(tipoUsuario);
+		}
+		else if(evento.getSource().equals(mniModificacionCliente))
+		{
+			new ModificacionCliente(tipoUsuario);
+		}
+		else if(evento.getSource().equals(mniBajaRepartidor))
+		{
+			new BajaRepartidor(tipoUsuario);
+		}
+
+		else if(evento.getSource().equals(mniConsultaVehiculos))
+		{
+			new ConsultaVehiculo(tipoUsuario);
+		}
+
+		else if(evento.getSource().equals(mniBajaVehiculo))
+		{
+			new BajaVehiculo(tipoUsuario);
+		}
+
+		else if(evento.getSource().equals(mniModificacionVehiculo))
+		{
+			new ModificacionVehiculo(tipoUsuario);
+		}
+		else if(evento.getSource().equals(mniModificacionCompranEntregan))
+		{
+			new ModificacionComprEntrega(tipoUsuario);
+		}
+		else if (evento.getSource().equals(mniAyuda))
+		{
+
+
+			{
+				try
+				{
+					Runtime.getRuntime().exec("hh.exe Ayuda.chm");
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
 
-	@Override
-	public void windowOpened(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
 
 
-	@Override
-	public void windowClosing(WindowEvent we) {
+@Override
+public void windowOpened(WindowEvent e) {
+	// TODO Auto-generated method stub
 
-		System.exit(0);
-
-	}
-
-
-	@Override
-	public void windowClosed(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+}
 
 
-	@Override
-	public void windowIconified(WindowEvent e) {
-		// TODO Auto-generated method stub
+@Override
+public void windowClosing(WindowEvent we) {
 
-	}
-
-
-	@Override
-	public void windowDeiconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+	BaseDeDatos bd= new BaseDeDatos();
+	bd.guardarLog(tipoUsuario, "Logout");
+	System.exit(0);
 
 
-	@Override
-	public void windowActivated(WindowEvent e) {
-		// TODO Auto-generated method stub
 
-	}
+}
 
 
-	@Override
-	public void windowDeactivated(WindowEvent e) {
-		// TODO Auto-generated method stub
+@Override
+public void windowClosed(WindowEvent e) {
+	// TODO Auto-generated method stub
 
-	}
+}
+
+
+@Override
+public void windowIconified(WindowEvent e) {
+	// TODO Auto-generated method stub
+
+}
+
+
+@Override
+public void windowDeiconified(WindowEvent e) {
+	// TODO Auto-generated method stub
+
+}
+
+
+@Override
+public void windowActivated(WindowEvent e) {
+	// TODO Auto-generated method stub
+
+}
+
+
+@Override
+public void windowDeactivated(WindowEvent e) {
+	// TODO Auto-generated method stub
+
+}
 }
