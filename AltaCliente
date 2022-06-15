@@ -35,7 +35,7 @@ public class AltaCliente implements WindowListener, ActionListener
 	TextField txtCorreo= new TextField(50);
 	TextField txtPais= new TextField(50);
 
-
+    int tipoUsuario;
 	Button btnAceptar= new Button ("Aceptar");
 	Button btnLimpiar= new Button ("Limpiar");
 
@@ -45,8 +45,9 @@ public class AltaCliente implements WindowListener, ActionListener
 	BaseDeDatos bd= new BaseDeDatos();
 
 	//constructor
-	public AltaCliente() 	
+	public AltaCliente(int tipoUsuario ) 	
 	{
+		this.tipoUsuario = tipoUsuario;
 		// Listener
 		ventana.addWindowListener(this);
 		dlgMensaje.addWindowListener(this);
@@ -106,8 +107,9 @@ public class AltaCliente implements WindowListener, ActionListener
 
 			// hacer el insert con esos datos
 			String Sentencia= "Insert into clientes values (null,'"+nombre+"','"+apellidos+"','"+dni+"',"
-					+ "'"+Direccion+"',"+codigoPostal+","+Telefono+",'"+Provincia+"','"+Correo+"','"+Pais+"');";
-			int resultado= bd.AltaCliente(Sentencia);
+					+ "'"+Direccion+"','"+codigoPostal+"','"+Telefono+"','"+Provincia+"','"+Correo+"','"+Pais+"');";
+			
+			int resultado= bd.AltaCliente(Sentencia, tipoUsuario);
 
 			if(resultado==0)			
 			{
@@ -217,4 +219,6 @@ public class AltaCliente implements WindowListener, ActionListener
 
 	}
 }
+
+
 
