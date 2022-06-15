@@ -27,12 +27,12 @@ public class Login implements WindowListener, ActionListener
 	Button btnAceptar= new Button("Aceptar");
 	Button btnCancelar= new Button ("Cancelar");
 	Dialog dlgMensaje= new Dialog(ventana, "Mensaje", true);
-	Label lblMensaje= new Label("XXXXXXXXXXXXX");
+	Label lblMensaje= new Label("XXXXXXX");
+	int tipoUsuario;
 	 
 	
  
 	//constructor
-
 	public Login() {
 
 		//Listener
@@ -81,12 +81,17 @@ public class Login implements WindowListener, ActionListener
 			// coger los textos de la ventana: usuario y clave
 			String usuario= txtUsuario.getText();
 			String clave=txtClave.getText();
+			if (usuario.equals("Admin")) {
+				tipoUsuario= 1 ;
+			}else {
+				tipoUsuario = 0;
+			}
 			// conectar  BD
 			BaseDeDatos bd=new BaseDeDatos();
 			bd.conectar();
 			//hacer un select
 			int resultado=bd.consultar("Select * from usuarios where nombreUsuario= '"+usuario+
-					"'and claveUsuario=SHA2('"+clave+"',256);");
+					"'and claveUsuario=SHA2('"+clave+"',256);", tipoUsuario);
 			
 
 			//caso afirmatico: mostrar menú principal
@@ -106,7 +111,9 @@ public class Login implements WindowListener, ActionListener
 			else
 			{
                // caso afirmativo (0-1):Mostrar Menú Principal
-				new MenuPrincipal(resultado);
+				
+				bd.guardarLog(tipoUsuario, "Login");
+				new MenuPrincipal(tipoUsuario);
 				ventana.setVisible(false);
 			}
 			// desconectar la base de datos
