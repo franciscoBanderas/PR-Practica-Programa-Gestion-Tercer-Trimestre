@@ -32,9 +32,11 @@ public class AltaCompranEntregan implements WindowListener, ActionListener
 	ResultSet rs = null;
 	int idRepartidorFK;
 	int idClienteFK;
+	int tipoUsuario;
 
-	public AltaCompranEntregan()
+	public AltaCompranEntregan(int tipoUsuario)
 	{
+		this.tipoUsuario=tipoUsuario;
 		ventana.setLayout(new FlowLayout());
 		ventana.addWindowListener(this);
 		ventana.add(lblDesde);
@@ -111,7 +113,7 @@ public class AltaCompranEntregan implements WindowListener, ActionListener
 			String[] seleccionado2 = choClientes.getSelectedItem().split("-"); //Trocear
 			idClienteFK = Integer.parseInt(seleccionado2[0]);
 			idRepartidorFK = Integer.parseInt(seleccionado[0]);
-			int resultado = bd.AltaCompraEntregan(txtDesde.getText(), txtHasta.getText(), idRepartidorFK, idClienteFK);
+			int resultado = bd.AltaCompraEntregan(txtDesde.getText(), txtHasta.getText(), idRepartidorFK, idClienteFK,  tipoUsuario);
 
 			if(resultado == 0)
 			{
@@ -190,6 +192,11 @@ public class AltaCompranEntregan implements WindowListener, ActionListener
 	}
 
 }
+
+
+
+
+
 
 
 
